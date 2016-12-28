@@ -18,7 +18,7 @@ Bundle 'FuzzyFinder'
 Bundle 'taglist.vim'
 Bundle 'Gist.vim'
 Bundle 'L9'
-Bundle 'git://git.wincent.com/command-t.git'
+"Bundle 'git://git.wincent.com/command-t.git'
 Bundle 'VimClojure'
 Bundle 'tpope/vim-surround'
 Bundle 'scrooloose/nerdcommenter'
@@ -46,8 +46,10 @@ filetype plugin indent on     " required!
 
 filetype plugin indent on
 
+highlight OverLength ctermbg=red ctermfg=white guibg=red guifg=white
+
 set hidden
-set number
+"set number
 set wildmenu
 set wildmode=list:longest
 set title
@@ -82,7 +84,6 @@ set statusline+=%<%P                         " file position
 compiler ruby
 
 autocmd FileType make     set noexpandtab
-autocmd FileType python   set noexpandtab
 
 let g:fuzzy_ignore = "*.log" 
 let g:fuzzy_matching_limit = 70
@@ -135,8 +136,13 @@ nmap <D-6> g^
 nmap <D-0> g^
 
 " CSApprox
-if (&term == 'xterm')
+if (&term == 'xterm' || &term =~? '^screen')
   set t_Co=256
+endif
+" Make CommandT work with rxvt
+if (&term == 'rxvt-unicode' || &term == 'rxvt')
+  let g:CommandTSelectNextMap = ['<C-n>', '<C-j>', '<ESC>OB']
+  let g:CommandTSelectPrevMap = ['<C-p>', '<C-k>', '<ESC>OA']
 endif
 
 " Suppress lustyjuggler warnings
@@ -215,11 +221,11 @@ if has("autocmd")
   augroup END
 
 
-  if exists("did\_load\_filetypes")
-
-    finish
-
-  endif
+"  if exists("did\_load\_filetypes")
+"
+"    finish
+"
+"  endif
 
   augroup markdown
 
@@ -240,4 +246,18 @@ else
   " Settings for raw text editing
 endif " has("autocmd")
 
+" File extensions is one way to figure out what language specific stuff to do
+autocmd! BufNewFile,BufReadPre,FileReadPre *.py   so  ~/.vim/python.vim
+autocmd! BufNewFile,BufReadPre,FileReadPre *.php  so  ~/.vim/php.vim
+autocmd! BufNewFile,BufReadPre,FileReadPre *.phpt set syn=php
+autocmd! BufNewFile,BufReadPre,FileReadPre *.java so  ~/.vim/java.vim
+autocmd! BufNewFile,BufReadPre,FileReadPre *.ruby so  ~/.vim/ruby.vim
 
+" Syntax option is another. Syntax can be set by vim scanning the shebang
+" line, for example
+autocmd! Syntax python so ~/.vim/python.vim
+autocmd! Syntax php    so ~/.vim/php.vim
+autocmd! Syntax java   so ~/.vim/java.vim
+autocmd! Syntax ruby   so ~/.vim/ruby.vim
+
+source ~/.vim/gnupg.vim
